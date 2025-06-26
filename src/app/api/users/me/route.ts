@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 connect();
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const userId = getDataFromToken(req);
   if (!userId) {
     return NextResponse.json({ message: "Invalid or expired token" }, { status: 401 });

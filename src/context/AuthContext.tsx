@@ -1,60 +1,53 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface User {
-  role: string;
+  _id: string;
+  name: string;
   email: string;
+  role: 'Student' | 'Mess_Owner';
 }
 
 interface AuthContextType {
   user: User | null;
-  logout: () => void;
-  isLoggedIn: boolean;
+  loading: boolean;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  logout: () => {},
-  isLoggedIn: false,
+  loading: true,
+  setUser: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cookie = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('userToken='));
-
-    if (cookie) {
+    const fetchUser = async () => {
       try {
-        const token = cookie.split('=')[1];
-        const decoded = JSON.parse(atob(token));
-        setUser(decoded);
-      } catch {
+        const res = await axios.get('/api/users/me'); // reads from cookies
+        setUser(res.data.user);
+      } catch (err) {
+        console.log("user does not exist",err);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
-  const logout = () => {
-    document.cookie = 'userToken=; Max-Age=0; path=/';
-    setUser(null);
-    window.location.href = '/';
-  };
-
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        logout,
-        isLoggedIn: !!user,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+ 

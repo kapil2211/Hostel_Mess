@@ -87,12 +87,7 @@ const Page = () => {
 
     return (
         <div className="relative h-screen w-screen overflow-hidden">
-            <Image
-                src="/images/loginbg.jpeg"
-                alt="Login Background"
-                fill
-                className="object-cover -z-10"
-            />
+            <Image src="/images/loginbg.jpeg" alt="Login Background" fill className="object-cover -z-10" />
 
             <div className="relative z-10 flex h-full items-center justify-center overflow-y-auto py-8">
                 <form onSubmit={(e) => {
